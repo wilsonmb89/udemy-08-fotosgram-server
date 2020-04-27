@@ -3,7 +3,6 @@ import { Usuario } from '../models/usuario.model';
 import bcrypt from 'bcrypt';
 import Token from '../classes/token';
 import { validateToken } from '../middlewares/tokenValidation';
-import { json } from 'body-parser';
 
 /** Controller definition */
 const userRoutes = Router();
@@ -95,6 +94,12 @@ userRoutes.get('/getUser', (req: Request, res: Response) => {
       .then(userDB => { res.json({ok: true, user: userDB}); })
       .catch(error => { res.json({ok: false, error}); });
   }
+});
+
+
+userRoutes.get('/', [validateToken], (req: any, res: Response) => {
+  const tokenData = req.usuario;
+  return res.json({ ok: true, user: tokenData });
 });
 
 /** Controller export to express instance */

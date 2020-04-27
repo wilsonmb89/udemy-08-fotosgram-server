@@ -24,7 +24,7 @@ const usuarioSchema = new Schema({
 
 /** Metodos */
 usuarioSchema.method('checkPassword', function(password: string): boolean {
-  return bcrypt.compareSync(password, this.password);
+  return bcrypt.compareSync(password, this.password); // Si sale error por el this ajustar a "noImplicitThis": false en tsconfig.json
 });
 
 interface IUsuario extends Document {

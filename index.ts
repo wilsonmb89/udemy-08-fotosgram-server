@@ -3,6 +3,8 @@ import userRoutes from './routes/usuario';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import securityRoutes from './routes/security';
+import postRoutes from './routes/post';
+import fileUpload from 'express-fileupload';
 
 const server = new Server();
 
@@ -21,9 +23,13 @@ mongoose.connect('mongodb://localhost:27017/fotosgram',
 server.app.use(bodyParser.urlencoded({extended: true}));
 server.app.use(bodyParser.json());
 
+/** Set fileUpload */
+server.app.use(fileUpload());
+
 /** Set Controllers */
 server.app.use('/user', userRoutes);
 server.app.use('/security', securityRoutes);
+server.app.use('/post', postRoutes);
 
 // Server Init
 server.start(
