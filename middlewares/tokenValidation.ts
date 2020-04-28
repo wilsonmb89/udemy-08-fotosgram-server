@@ -12,7 +12,7 @@ export const validateToken = (req: any, res: Response, next: NextFunction) => {
     )
     .catch(
       error => {
-        res.json({ok: false, mensaje:'Token invalido', error});
+        res.status(401).json({ok: false, mensaje:'Token invalido', error});
       }
     );
 };
