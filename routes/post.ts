@@ -42,6 +42,7 @@ postRoutes.get('/getPosts', validateToken, (req: any, res: Response) => {
   const skip = (page - 1) * resultsPerPage;
   Post.find()
     .populate('usuario', '-password')
+    .populate('img')
     .sort({ _id: -1 }) // Ordenamiento por _id de forma descendente
     .skip(skip) // Registros a saltar
     .limit(resultsPerPage) // Solo obtiene los 10 primeros
@@ -50,11 +51,11 @@ postRoutes.get('/getPosts', validateToken, (req: any, res: Response) => {
         res.json({ ok: true, page, resultsPerPage, posts: postResults });
       }
     )
-    .catch(error => { res.json({ ok: false, error }); });
+    .catch(error => { res.status(500).json({ ok: false, error }); });
 });
 
 /**
- * Obtener los post almacenados en la base de datos
+ * Obtener un post almacenado en la base de datos
  */
 postRoutes.get('/getPost', validateToken, (req: any, res: Response) => {
   const postId = req.query.postId;
@@ -67,19 +68,20 @@ postRoutes.get('/getPost', validateToken, (req: any, res: Response) => {
             await postDB.populate('img').execPopulate();
             return res.json({ ok: true, post: postDB});
           }
-          res.json({ ok: false, mensaje: 'No existe ningun post con el id'});
+          return res.status(404).json({ ok: false, mensaje: 'No existe ningun post con el id'});
         }
       )
       .catch(
-        error => { res.json({ ok: false, error }); }
+        error => { res.status(500).json({ ok: false, error }); }
       );
   }
+  res.status(404).json({ ok: false, mensaje: 'No se encontró ningún id'});
 });
 
 /**
  * Almacena una imagen el un post definido
  */
-postRoutes.post('/upload', [validateToken], (req: any, res: Response) => {
+postRoutes.post('/uploadPostImage', [validateToken], (req: any, res: Response) => {
   const postId = req.body.postId;
   if (!postId) {
     return res.status(400).json({ ok: false, mensaje: 'Es necesario el id del post'});
@@ -118,24 +120,24 @@ postRoutes.post('/upload', [validateToken], (req: any, res: Response) => {
                   postImages.push(postImgSave);
                   const postUpdate = await Post.findById(postId).update({ img: postImages });
                   if (!!postUpdate) {
-                    return res.status(400).json({ ok: true, fileSaved: postImgSave });
+                    return res.json({ ok: true, fileSaved: postImgSave });
                   }
                 }
-                res.status(400).json({ ok: false, error: 'No existe un post con el id ingresado' });
+                res.status(404).json({ ok: false, error: 'No existe un post con el id ingresado' });
               }
             )
             .catch(error => { res.status(400).json({ ok: false, error }); });
         } else if (!!fileSaved && !!systemFileName) {
           return res.json({ ok: true, fileSaved: imageFile });
         } else {
-          res.status(400).json({ ok: false, error: 'No fue posible guardar la imagen en el servidor' });
+          res.status(500).json({ ok: false, error: 'No fue posible guardar la imagen en el servidor' });
         }
       }
     )
-    .catch(error => { res.status(400).json({ ok: false, error }); });
+    .catch(error => { res.status(500).json({ ok: false, error }); });
 });
 
-postRoutes.get('/getImage/:userId/:postId/:imageName', [validateToken] , (req: any, res: Response) => {
+postRoutes.get('/getImage/:userId/:postId/:imageName', (req: any, res: Response) => {
   const userId = req.params.userId;
   const postId = req.params.postId;
   const imageName = req.params.imageName;

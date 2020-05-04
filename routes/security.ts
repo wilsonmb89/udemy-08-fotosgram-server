@@ -20,7 +20,7 @@ securityRoutes.post('/login', (req: Request, res: Response) => {
           const userToken = Token.getJwtToken({
             _id : userDB._id,
             nombre: userDB.nombre,
-            mail: userDB.email,
+            email: userDB.email,
             avatar: userDB.avatar
           });
           return res.json({ ok: true, user: userDB, token: userToken });
@@ -28,7 +28,7 @@ securityRoutes.post('/login', (req: Request, res: Response) => {
         return res.json({ok: false, mensaje: 'Usuario/Contraseña no son correctos'});
       }
     )
-    .catch(err => { res.json({of: false, error: err}) });
+    .catch(err => { res.status(500).json({of: false, error: err}) });
 });
 
 export default securityRoutes;

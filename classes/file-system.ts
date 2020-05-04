@@ -33,7 +33,7 @@ export default class FileSystem {
   private writeFile(fileImage: FileUpload, storePostPath: string, fileName?: string) {
     fileName = !!fileName ? fileName : this.getUniqueFileName(fileImage.name);
     if (!!fileName) {
-      const fullStoragePath = `${storePostPath}/${fileName}`
+      const fullStoragePath = `${storePostPath}/${fileName}`;
       fs.writeFileSync(fullStoragePath, fileImage.data);
       return {
         fileSystemName: fileName.split('.')[0],

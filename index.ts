@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import securityRoutes from './routes/security';
 import postRoutes from './routes/post';
 import fileUpload from 'express-fileupload';
+import cors from 'cors'; 
 
 const server = new Server();
 
@@ -25,6 +26,9 @@ server.app.use(bodyParser.json());
 
 /** Set fileUpload */
 server.app.use(fileUpload());
+
+/** Set CORS Config */
+server.app.use(cors({origin: true, credentials: true}));
 
 /** Set Controllers */
 server.app.use('/user', userRoutes);

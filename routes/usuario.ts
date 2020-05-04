@@ -32,7 +32,7 @@ userRoutes.post('/create', (req: Request, res: Response) => {
       }
     ).catch(
       error => {
-        res.json({ok: false, error});
+        res.status(500).json({ok: false, error});
       }
     );
 });
@@ -46,17 +46,18 @@ userRoutes.post('/update', validateToken, (req: any, res: Response) => {
   Usuario.findByIdAndUpdate(req.usuario._id, userUpdate, { new: true })
     .then(
       userDB => {
-        if (!userDB) { return res.json({ ok: false, mensaje: 'No existe un usuario con ese ID' })}
+        if (!userDB) { return res.status(404).json({ ok: false, mensaje: 'No existe un usuario con ese ID' })}
         const userToken = Token.getJwtToken({
           _id : userDB._id,
-          userName: userDB.nombre,
-          mail: userDB.email
+          nombre: userDB.nombre,
+          email: userDB.email,
+          avatar: userDB.avatar
         });
         res.json({ok: true, user: userDB, token: userToken});
       }
     )
     .catch(
-      error => { res.json({ok: false, error}); }
+      error => { res.status(500).json({ok: false, error}); }
     );
 });
 
@@ -78,7 +79,7 @@ userRoutes.get('/getUser', (req: Request, res: Response) => {
     // Opcion 2
     Usuario.findById(userId)
       .then(userDB => { res.json({ok: true, user: userDB}); })
-      .catch(error => { res.json({ok: false, error}); });
+      .catch(error => { res.status(500).json({ok: false, error}); });
 
   } else {
     // Opcion 1
@@ -92,7 +93,7 @@ userRoutes.get('/getUser', (req: Request, res: Response) => {
     // Opcion 2
     Usuario.find()
       .then(userDB => { res.json({ok: true, user: userDB}); })
-      .catch(error => { res.json({ok: false, error}); });
+      .catch(error => { res.status(500).json({ok: false, error}); });
   }
 });
 
