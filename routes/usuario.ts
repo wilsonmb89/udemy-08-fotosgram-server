@@ -25,7 +25,7 @@ userRoutes.post('/create', (req: Request, res: Response) => {
         const userToken = Token.getJwtToken({
           _id : userDB._id,
           nombre: userDB.nombre,
-          mail: userDB.email,
+          email: userDB.email,
           avatar: userDB.avatar
         });
         res.json({ok: true, user: userDB, token: userToken});
